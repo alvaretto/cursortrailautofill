@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cursor Trail Bypass Auto</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="logo-container">
+        <svg class="logo-icon" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="32" cy="32" r="30" fill="url(#gradient1)" stroke="white" stroke-width="2"/>
+          <path d="M20 32L28 40L44 24" stroke="white" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M32 12C32 12 38 18 38 24C38 30 32 36 32 36" stroke="white" stroke-width="2.5" stroke-linecap="round" opacity="0.6"/>
+          <path d="M32 12C32 12 26 18 26 24C26 30 32 36 32 36" stroke="white" stroke-width="2.5" stroke-linecap="round" opacity="0.6"/>
+          <circle cx="32" cy="48" r="2" fill="white" opacity="0.8"/>
+          <circle cx="38" cy="50" r="1.5" fill="white" opacity="0.6"/>
+          <circle cx="26" cy="50" r="1.5" fill="white" opacity="0.6"/>
+          <defs>
+            <linearGradient id="gradient1" x1="0" y1="0" x2="64" y2="64" gradientUnits="userSpaceOnUse">
+              <stop offset="0%" stop-color="#667eea"/>
+              <stop offset="100%" stop-color="#764ba2"/>
+            </linearGradient>
+          </defs>
+        </svg>
+        <div>
+          <h2>Cursor Trail Bypass Auto</h2>
+          <div class="version">v4.0.0</div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Tab Navigation -->
+    <div class="tab-navigation">
+      <button class="tab-btn active" data-tab="generate">Generate Now</button>
+      <button class="tab-btn" data-tab="precards">Pre-Cards</button>
+    </div>
+    
+    <!-- Tab Content: Generate Now -->
+    <div class="content tab-content active" id="generateTab">
+      <div class="input-group">
+        <label for="bin">Enter BIN:</label>
+        <input type="text" id="bin" placeholder="552461" maxlength="16">
+      </div>
+      
+      <div class="input-group">
+        <label for="generateMethod">Generation Method:</label>
+        <select id="generateMethod" class="method-select">
+          <option value="luhn">Luhn Algorithm (Offline)</option>
+          <option value="api">API Generator (Online)</option>
+        </select>
+      </div>
+      
+      <div class="status" id="status">
+        <p>Enter BIN and visit Stripe checkout page</p>
+      </div>
+      
+      <button id="generateBtn" class="btn btn-primary">
+        Generate & Auto Fill
+      </button>
+      
+      <button id="clearBtn" class="btn btn-secondary">
+        Clear Saved BIN
+      </button>
+      
+      <div class="info vpn-warning">
+        <h4>⚠️ Important - VPN Required:</h4>
+        <ol>
+          <li><strong>FIRST: Enable VPN and set location to United States</strong></li>
+          <li>Use <a href="https://chromewebstore.google.com/detail/urban-vpn-proxy/eppiocemhmnlbhjplcgkofciiegomcon?hl=en" target="_blank" class="vpn-link">Urban VPN Chrome Extension</a></li>
+          <li><strong>Make sure VPN is enabled BEFORE clicking "Start Free Trial" on Cursor</strong></li>
+          <li>After VPN is active, open any Stripe checkout page</li>
+          <li>Click extension icon</li>
+          <li>BIN is pre-filled (552461)</li>
+          <li>Click "Generate & Auto Fill"</li>
+          <li>Wait - cards will auto-fill instantly!</li>
+        </ol>
+      </div>
+      
+      <div class="info critical-warning">
+        <h4>🔴 Critical Reminder:</h4>
+        <p><strong>You MUST enable VPN with United States location BEFORE clicking "Start Free Trial" on Cursor!</strong></p>
+        <p>Without VPN enabled, the trial will not work properly.</p>
+      </div>
+      
+      <div class="saved-bin" id="savedBin" style="display: none;">
+        <p><strong>Saved BIN:</strong> <span id="savedBinValue"></span></p>
+      </div>
+      
+      <div class="footer-section">
+        <a href="https://telegram.dog/cursortempnumber" target="_blank" class="telegram-link">
+          <svg viewBox="0 0 24 24" fill="currentColor" class="telegram-icon">
+            <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.562 8.161l-1.84 8.673c-.138.633-.5.784-1.013.488l-2.804-2.066-1.351 1.3c-.15.15-.275.275-.563.275l.2-2.85 5.175-4.675c.225-.2-.05-.313-.35-.113l-6.388 4.025-2.75-.863c-.6-.187-.612-.6.125-.887l10.738-4.138c.5-.187.937.113.775.888z"/>
+          </svg>
+          <span>Get Free temporary email and mobile number on telegram</span>
+        </a>
+      </div>
+    </div>
+    
+    <!-- Tab Content: Pre-Cards -->
+    <div class="content tab-content" id="precardsTab">
+      <div class="input-group">
+        <label for="precardBin">Enter BIN for Pre-Cards:</label>
+        <input type="text" id="precardBin" placeholder="552461" maxlength="16">
+      </div>
+      
+      <div class="input-group">
+        <label for="precardMethod">Generation Method:</label>
+        <select id="precardMethod" class="method-select">
+          <option value="luhn">Luhn Algorithm (Offline)</option>
+          <option value="api">API Generator (Online)</option>
+        </select>
+      </div>
+      
+      <div class="status" id="precardStatus">
+        <p>Generate pre-cards to save for later use</p>
+      </div>
+      
+      <button id="generatePrecardsBtn" class="btn btn-primary">
+        Generate 10 Pre-Cards
+      </button>
+      
+      <button id="clearPrecardsBtn" class="btn btn-secondary">
+        Clear All Pre-Cards
+      </button>
+      
+      <div class="precards-container" id="precardsContainer">
+        <h3 class="precards-title">Saved Pre-Cards</h3>
+        <div id="precardsList" class="precards-list">
+          <p class="no-cards-message">No pre-cards generated yet</p>
+        </div>
+      </div>
+      
+      <div class="info">
+        <h4>📋 How to Use Pre-Cards:</h4>
+        <ol>
+          <li>Enter BIN and click "Generate 10 Pre-Cards"</li>
+          <li>Cards will be saved to local storage</li>
+          <li>Open any Stripe checkout page</li>
+          <li>Click "Use" button next to any card</li>
+          <li>Card details will auto-fill instantly!</li>
+          <li>Regenerate cards anytime with new BIN</li>
+        </ol>
+      </div>
+    </div>
+  </div>
+  
+  <script src="popup.js"></script>
+</body>
+</html>
