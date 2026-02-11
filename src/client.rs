@@ -127,7 +127,8 @@ pub const SCRAP_X11_REQUIRED: &str = "x11 expected";
 pub const SCRAP_X11_REF_URL: &str = "https://rustdesk.com/docs/en/manual/linux/#x11-required";
 
 #[cfg(not(target_os = "linux"))]
-pub const AUDIO_BUFFER_MS: usize = 3000;
+// Reduced from 3000ms to 500ms for better AV sync and lower latency
+pub const AUDIO_BUFFER_MS: usize = 500;
 
 #[cfg(feature = "flutter")]
 #[cfg(not(any(target_os = "android", target_os = "ios")))]
@@ -1410,6 +1411,11 @@ impl AudioHandler {
     /// Handle audio frame and play it.
     #[inline]
     pub fn handle_frame(&mut self, frame: AudioFrame) {
+        // Update global AV sync controller with audio PTS
+        if frame.pts > 0 {
+            crate::av_sync::update_audio_pts(frame.pts);
+        }
+
         #[cfg(not(target_os = "linux"))]
         if self.audio_stream.is_none() || !self.ready.lock().unwrap().clone() {
             return;
@@ -1586,6 +1592,23 @@ impl VideoHandler {
         pixelbuffer: &mut bool,
         chroma: &mut Option<Chroma>,
     ) -> ResultType<bool> {
+        // Update global AV sync controller with video PTS
+        // Extract PTS from the first encoded frame
+        use hbb_common::message_proto::video_frame::Union::*;
+        if let Some(union) = &vf.union {
+            let pts_opt = match union {
+                Vp8s(frames) | Vp9s(frames) | Av1s(frames) | H264s(frames) | H265s(frames) => {
+                    frames.frames.first().map(|f| f.pts)
+                }
+                _ => None,
+            };
+            if let Some(pts) = pts_opt {
+                if pts > 0 {
+                    crate::av_sync::update_video_pts(pts);
+                }
+            }
+        }
+
         let format = CodecFormat::from(&vf);
         if format != self.decoder.format() {
             self.reset(Some(format));

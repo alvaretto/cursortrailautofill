@@ -631,7 +631,14 @@ fn run(vs: VideoService) -> ResultType<()> {
 
     let mut frame_controller = VideoFrameController::new(display_idx);
 
-    let start = time::Instant::now();
+    // Initialize AV synchronization clock if not already initialized
+    if crate::av_sync::get_av_clock_start().is_none() {
+        crate::av_sync::init_av_clock();
+        log::info!("AV sync clock initialized from video service");
+    }
+
+    // Use AV sync clock as reference, fallback to local if not available
+    let start = crate::av_sync::get_av_clock_start().unwrap_or_else(|| time::Instant::now());
     let mut last_check_displays = time::Instant::now();
     #[cfg(windows)]
     let mut try_gdi = 1;

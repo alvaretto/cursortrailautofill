@@ -100,6 +100,13 @@ mod pa_impl {
         unsafe {
             AUDIO_ZERO_COUNT = 0;
         }
+
+        // Initialize AV synchronization clock if not already initialized
+        if crate::av_sync::get_av_clock_start().is_none() {
+            crate::av_sync::init_av_clock();
+            log::info!("AV sync clock initialized from audio service");
+        }
+
         let mut encoder = Encoder::new(crate::platform::PA_SAMPLE_RATE, Stereo, LowDelay)?;
         #[cfg(target_os = "linux")]
         allow_err!(
@@ -482,6 +489,9 @@ fn send_f32(data: &[f32], encoder: &mut Encoder, sp: &GenericService) {
             AUDIO_ZERO_COUNT += 1;
         }
     }
+
+    // Get synchronized timestamp
+    let pts = crate::av_sync::get_av_timestamp_ms().unwrap_or(0);
     #[cfg(target_os = "android")]
     {
         // the permitted opus data size are 120, 240, 480, 960, 1920, and 2880
@@ -499,6 +509,7 @@ fn send_f32(data: &[f32], encoder: &mut Encoder, sp: &GenericService) {
                         let mut msg_out = Message::new();
                         msg_out.set_audio_frame(AudioFrame {
                             data: data.into(),
+                            pts,
                             ..Default::default()
                         });
                         sp.send(msg_out);
@@ -518,6 +529,7 @@ fn send_f32(data: &[f32], encoder: &mut Encoder, sp: &GenericService) {
             let mut msg_out = Message::new();
             msg_out.set_audio_frame(AudioFrame {
                 data: data.into(),
+                pts,
                 ..Default::default()
             });
             sp.send(msg_out);

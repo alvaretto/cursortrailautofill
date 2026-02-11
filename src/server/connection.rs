@@ -790,11 +790,21 @@ impl Connection {
                     #[allow(unused_mut)]
                     let mut msg = value;
 
-                    if latency > 1000 {
+                    // Improved latency handling: instead of dropping audio at 1000ms,
+                    // use a more aggressive threshold (2000ms) and log for monitoring
+                    if latency > 2000 {
                         match &msg.union {
-                            Some(message::Union::AudioFrame(_)) => {
-                                // log::info!("audio frame latency {}", instant.elapsed().as_secs_f32());
+                            Some(message::Union::AudioFrame(af)) => {
+                                log::debug!("Dropping audio frame due to high latency: {}ms, pts: {}", latency, af.pts);
                                 continue;
+                            }
+                            _ => {}
+                        }
+                    } else if latency > 500 {
+                        // Log warning for moderate latency but still send
+                        match &msg.union {
+                            Some(message::Union::AudioFrame(af)) => {
+                                log::debug!("Audio frame latency warning: {}ms, pts: {}", latency, af.pts);
                             }
                             _ => {}
                         }
